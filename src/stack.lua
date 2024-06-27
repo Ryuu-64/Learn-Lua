@@ -29,4 +29,8 @@ function Stack:size()
     return #self.stack
 end
 
+function Stack:getType()
+    return self._type
+end
+
 return Stack;
