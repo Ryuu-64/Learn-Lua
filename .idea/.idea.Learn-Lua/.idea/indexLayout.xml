@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="UserContentModel">
+    <attachedFolders>
+      <Path>learn-lua</Path>
+    </attachedFolders>
+    <explicitIncludes>
+      <Path>Lua</Path>
+      <Path>learn-lua/src</Path>
+    </explicitIncludes>
+    <explicitExcludes />
+  </component>
+</project>
