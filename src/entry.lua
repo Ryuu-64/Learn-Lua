@@ -1,5 +1,5 @@
-local Tables = require("util.tables")
-local Time = require("oop.time")
+local Tables = require("util.Tables")
+local DeepToStringObject = require("oop.DeepToStringObject")
 
 local t = {
     a = 1,
@@ -15,11 +15,7 @@ local t = {
         return "bar", a - b
     end
 }
---print("print(Tables.deepToString(t))")
---print(Tables.deepToString(t))
 
-print("print(Tables.deepToString(Time:new()))")
-print(Tables.deepToString(Time:new()))
+print(Tables.DeepToString(t))
 
---print("print(Tables.deepToString(Time.__index))")
---print(Tables.deepToString(Time.__index))
+print(Tables.DeepToString(DeepToStringObject:new()))
