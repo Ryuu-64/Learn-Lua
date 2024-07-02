@@ -1,7 +1,7 @@
-local Tables = require("util.Tables")
+local DeepToString = require("util.DeepToString")
 local DeepToStringObject = require("oop.DeepToStringObject")
 
-local t = {
+local t1 = {
     a = 1,
     b = 2,
     innerTable = {
@@ -16,6 +16,19 @@ local t = {
     end
 }
 
-print(Tables.DeepToString(t))
+local t2 = {
+    table = t1
+}
 
-print(Tables.DeepToString(DeepToStringObject:new()))
+t1.table = t2
+
+print(DeepToString.of(t1))
+
+print(DeepToString.of(nil))
+
+--function func(a, b, c)
+--    return 42
+--end
+
+--print(DeepToString.of(func))
+print(DeepToString.of(DeepToStringObject:new()))

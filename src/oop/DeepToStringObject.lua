@@ -3,13 +3,13 @@
 --- @class DeepToStringObject:Object
 local DeepToStringObject = {}
 DeepToStringObject.__index = DeepToStringObject
-DeepToStringObject.filedC = "1"
+DeepToStringObject.filedE = "1"
 
 function DeepToStringObject:new()
     local instance = Object:new(self)
+    instance._type = "DeepToStringObject"
     instance.filedA = 14
     instance.filedB = 150
-    instance._type = "DeepToStringObject"
     instance.innerTable = {
         filedC = 1,
         filedD = "D",
@@ -19,8 +19,7 @@ function DeepToStringObject:new()
         foo = function(x, y)
             return "foo", x + y
         end
-    },
-    instance
+    }
     setmetatable(instance, self)
     return instance
 end
