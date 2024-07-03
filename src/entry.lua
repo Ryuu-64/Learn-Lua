@@ -1,7 +1,9 @@
 local DeepToString = require("util.DeepToString")
 local DeepToStringObject = require("oop.DeepToStringObject")
 
-local t1 = {
+print("" .. DeepToString.of(nil))
+
+local normalTable = {
     a = 1,
     b = 2,
     innerTable = {
@@ -15,20 +17,62 @@ local t1 = {
         return "bar", a - b
     end
 }
+print("\nprint(DeepToString.of(normalTable))")
+print(DeepToString.of(normalTable))
 
-local t2 = {
-    table = t1
+local nestedTable1 = {
+    filedInT1 = 1,
 }
 
-t1.table = t2
+local nestedTable2 = {
+    filedInT2 = 2,
+    nestedTableInT2 = nestedTable1
+}
 
-print(DeepToString.of(t1))
+nestedTable1.nestedTableInT1 = nestedTable2
+print("\nprint(DeepToString.of(nestedTable1))")
+print(DeepToString.of(nestedTable1))
 
-print(DeepToString.of(nil))
+local function func(a, b, c)
+    return 42
+end
+print("\nprint(DeepToString.of(func))")
+print(DeepToString.of(func))
 
---function func(a, b, c)
---    return 42
---end
-
---print(DeepToString.of(func))
+print("\nprint(DeepToString.of(DeepToStringObject:new()))")
 print(DeepToString.of(DeepToStringObject:new()))
+
+local tableWithFunctionMetaTable = {
+    foo = "foo",
+    bar = "bar"
+}
+
+setmetatable(tableWithFunctionMetaTable, {
+    __index = function(foo, bar)
+        return foo + bar
+    end
+})
+print("\nprint(DeepToString.of(tableWithFunctionMetaTable))")
+print(DeepToString.of(tableWithFunctionMetaTable))
+
+local tableWithToStringNilMetaTable = {
+    foo = "foo",
+    bar = "bar"
+}
+setmetatable(tableWithToStringNilMetaTable, {
+    __tostring = function()
+        return "nil"
+    end
+})
+print("\nprint(DeepToString.of(tableWithToStringNilMetaTable))")
+print(DeepToString.of(tableWithToStringNilMetaTable))
+
+local tableWith__index = {
+    foo = "bar",
+    bar = "foo",
+    __index = function(foo, bar)
+        return foo + bar
+    end
+}
+print("\nprint(DeepToString.of(tableWith__index))")
+print(DeepToString.of(tableWith__index))

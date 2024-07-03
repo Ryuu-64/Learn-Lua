@@ -1,5 +1,7 @@
 ﻿local DeepToString = {}
 
+local DEFAULT_INDENT = 4
+
 local function FunctionDeepToString(self, formatString)
     local info = debug.getinfo(self, "uS")
     local paramLength = info.nparams
@@ -18,6 +20,10 @@ end
 --region table
 local function GetTypePriority(value)
     local valueType = type(value)
+    if valueType == "userdata" then
+        return 4
+    end
+
     if valueType == "function" then
         return 3
     end
@@ -37,12 +43,24 @@ local function TableMemberSorter(a, b)
         return priorityA < priorityB
     end
 
-    return a.field < b.field
+    if type(a.field) == "userdata" or type(b.field) == "userdata" then
+        return false
+    else
+        return a.field < b.field
+    end
 end
 
 local function GetSortedTableMembers(self)
     local members = {}
     for k, v in pairs(self) do
+        local kToString = tostring(k)
+        if kToString == nil then
+            kToString = "nil"
+        end
+        local vToString = tostring(v)
+        if vToString == nil then
+            vToString = "nil"
+        end
         table.insert(members, { field = k, value = v })
     end
 
@@ -50,18 +68,32 @@ local function GetSortedTableMembers(self)
     return members
 end
 
-local function TableDeepToString(self, indent, isIndentSelf, existingElements)
-    if self == nil then
-        return "nil"
+local function TryGetExistMember(table, variable)
+    for i = 1, #table do
+        local member = table[i]
+        if variable == member.value then
+            return member
+        end
     end
 
+    return nil
+end
+
+local function TableDeepToString(self, indent, isIndentSelf, existMembers)
     local string = ""
 
     if isIndentSelf then
         string = string .. string.rep(" ", indent)
     end
 
-    string = string .. "(" .. tostring(self) .. ")" .. ":\n"
+    table.insert(existMembers, { field = "self", value = self })
+
+    local selfToString = tostring(self)
+    -- tostring(self) maybe nil when override __tostring
+    if selfToString == nil then
+        selfToString = "nil"
+    end
+    string = string .. "(" .. selfToString .. ")" .. ":\n"
 
     local members = GetSortedTableMembers(self)
     for i = 1, #members do
@@ -69,25 +101,19 @@ local function TableDeepToString(self, indent, isIndentSelf, existingElements)
         local field = member.field
         local value = member.value
         local valueType = type(value)
+        string = string .. string.rep(" ", indent) .. tostring(field)
         if valueType == "table" and value ~= self then
-            local isExisting = false
-            --region existingElements
-            for j = 1, #existingElements do
-                local existingElement = existingElements[j]
-                if value == existingElement then
-                    isExisting = true
-                    break
-                end
+            local existMember = TryGetExistMember(existMembers, value)
+            if existMember == nil then
+                table.insert(existMembers, { field = field, value = value })
+                string = string .. TableDeepToString(value, indent + DEFAULT_INDENT, false, existMembers)
+            else
+                string = ":" .. tostring(value) .. "(nested:" .. tostring(existMember.field) .. ")\n"
             end
-            --endregion
-
-            string = string .. string.rep(" ", indent) .. field
-            string = string .. TableDeepToString(value, indent * 2, false)
         elseif valueType == "function" then
-            string = string .. string.rep(" ", indent) ..
-                "function:" .. field .. FunctionDeepToString(value, "(%s)") .. "\n"
+            string = string .. ":function" .. FunctionDeepToString(value, "(%s)") .. "\n"
         else
-            string = string .. string.rep(" ", indent) .. field .. ":"
+            string = string .. ":"
             if field == "__index" and self == value then
                 string = string .. "(__index is table it self)"
             else
@@ -97,10 +123,11 @@ local function TableDeepToString(self, indent, isIndentSelf, existingElements)
         end
     end
 
-    --region __index string
-    if type(self.__index) ~= "nil" and self.__index ~= self then
-        string = string .. string.rep(" ", indent) .. "__index:"
-        string = string .. TableDeepToString(self.__index, indent * 2, false)
+    --region metatable
+    local getSelfMetatable = getmetatable(self)
+    if getSelfMetatable ~= nil and getSelfMetatable ~= self then
+        string = string .. string.rep(" ", indent) .. "metatable:"
+        string = string .. TableDeepToString(getSelfMetatable, indent + DEFAULT_INDENT, false, existMembers)
     end
     --endregion
 
@@ -110,14 +137,15 @@ end
 
 function DeepToString.of(self)
     if self == nil then
-        return nil
+        return "nil"
     end
 
-    if type(self) == "table" then
-        return TableDeepToString(self, 4, false, {})
+    local selfType = type(self)
+    if selfType == "table" then
+        return TableDeepToString(self, DEFAULT_INDENT, false, {})
     end
 
-    if type(self) == "function" then
+    if selfType == "function" then
         return FunctionDeepToString(self, "function(%s)")
     end
 end
