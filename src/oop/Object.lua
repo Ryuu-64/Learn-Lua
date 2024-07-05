@@ -1,16 +1,14 @@
 ﻿--- @class Object
 local Object = {}
 Object.__index = Object
+Object._type = "Object"
 
 function Object:new()
-    local instance = {}
-    instance._type = "Object"
-    setmetatable(instance, self)
-    return instance
+    return setmetatable({}, self)
 end
 
-function Object:getType()
-    return self._type
+function Object:GetType()
+    return getmetatable(self)._type
 end
 
 return Object

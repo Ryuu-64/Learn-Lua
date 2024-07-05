@@ -1,7 +1,7 @@
 local DeepToString = require("util.DeepToString")
 local DeepToStringObject = require("oop.DeepToStringObject")
 
-print("" .. DeepToString.of(nil))
+--print("" .. DeepToString.of(nil))
 
 local normalTable = {
     a = 1,
@@ -17,8 +17,8 @@ local normalTable = {
         return "bar", a - b
     end
 }
-print("\nprint(DeepToString.of(normalTable))")
-print(DeepToString.of(normalTable))
+--print("\nprint(DeepToString.of(normalTable))")
+--print(DeepToString.of(normalTable))
 
 local nestedTable1 = {
     filedInT1 = 1,
@@ -30,17 +30,18 @@ local nestedTable2 = {
 }
 
 nestedTable1.nestedTableInT1 = nestedTable2
-print("\nprint(DeepToString.of(nestedTable1))")
-print(DeepToString.of(nestedTable1))
+--print("\nprint(DeepToString.of(nestedTable1))")
+--print(DeepToString.of(nestedTable1))
 
 local function func(a, b, c)
     return 42
 end
-print("\nprint(DeepToString.of(func))")
-print(DeepToString.of(func))
+--print("\nprint(DeepToString.of(func))")
+--print(DeepToString.of(func))
 
-print("\nprint(DeepToString.of(DeepToStringObject:new()))")
-print(DeepToString.of(DeepToStringObject:new()))
+--print("\nprint(DeepToString.of(DeepToStringObject:new()))")
+local deepToStringObject = DeepToStringObject:new()
+--print(DeepToString.of(deepToStringObject))
 
 local tableWithFunctionMetaTable = {
     foo = "foo",
@@ -52,8 +53,8 @@ setmetatable(tableWithFunctionMetaTable, {
         return foo + bar
     end
 })
-print("\nprint(DeepToString.of(tableWithFunctionMetaTable))")
-print(DeepToString.of(tableWithFunctionMetaTable))
+--print("\nprint(DeepToString.of(tableWithFunctionMetaTable))")
+--print(DeepToString.of(tableWithFunctionMetaTable))
 
 local tableWithToStringNilMetaTable = {
     foo = "foo",
@@ -64,8 +65,8 @@ setmetatable(tableWithToStringNilMetaTable, {
         return "nil"
     end
 })
-print("\nprint(DeepToString.of(tableWithToStringNilMetaTable))")
-print(DeepToString.of(tableWithToStringNilMetaTable))
+--print("\nprint(DeepToString.of(tableWithToStringNilMetaTable))")
+--print(DeepToString.of(tableWithToStringNilMetaTable))
 
 local tableWith__index = {
     foo = "bar",
@@ -74,5 +75,5 @@ local tableWith__index = {
         return foo + bar
     end
 }
-print("\nprint(DeepToString.of(tableWith__index))")
-print(DeepToString.of(tableWith__index))
+--print("\nprint(DeepToString.of(tableWith__index))")
+--print(DeepToString.of(tableWith__index))

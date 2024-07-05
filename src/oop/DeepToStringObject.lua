@@ -1,27 +1,18 @@
 ﻿local Object = require("oop.object")
 
 --- @class DeepToStringObject:Object
-local DeepToStringObject = {}
+local DeepToStringObject = setmetatable({}, Object)
 DeepToStringObject.__index = DeepToStringObject
+DeepToStringObject._type = "DeepToStringObject"
 DeepToStringObject.filedE = "1"
 
 function DeepToStringObject:new()
-    local instance = Object:new(self)
-    instance._type = "DeepToStringObject"
-    instance.filedA = 14
-    instance.filedB = 150
-    instance.innerTable = {
-        filedC = 1,
-        filedD = "D",
-        bar = function(a, b, ...)
-            return "bar", a - b
-        end,
-        foo = function(x, y)
-            return "foo", x + y
-        end
-    }
-    setmetatable(instance, self)
+    local instance = Object.new(self)
     return instance
+end
+
+function DeepToStringObject:FooBar()
+    return self.filedA + self.filedB
 end
 
 return DeepToStringObject

@@ -79,6 +79,16 @@ local function TryGetExistMember(table, variable)
     return nil
 end
 
+local function GetTableString(field, value, indent, existMembers, TableDeepToString)
+    local existMember = TryGetExistMember(existMembers, value)
+    if existMember == nil then
+        table.insert(existMembers, { field = field, value = value })
+        return TableDeepToString(value, indent + DEFAULT_INDENT, false, existMembers)
+    else
+        return ":" .. tostring(value) .. "(nested:" .. tostring(existMember.field) .. ")\n"
+    end
+end
+
 local function TableDeepToString(self, indent, isIndentSelf, existMembers)
     local string = ""
 
@@ -103,16 +113,11 @@ local function TableDeepToString(self, indent, isIndentSelf, existMembers)
         local valueType = type(value)
         string = string .. string.rep(" ", indent) .. tostring(field)
         if valueType == "table" and value ~= self then
-            local existMember = TryGetExistMember(existMembers, value)
-            if existMember == nil then
-                table.insert(existMembers, { field = field, value = value })
-                string = string .. TableDeepToString(value, indent + DEFAULT_INDENT, false, existMembers)
-            else
-                string = ":" .. tostring(value) .. "(nested:" .. tostring(existMember.field) .. ")\n"
-            end
+            string = string .. GetTableString(field, value, indent, existMembers, TableDeepToString)
         elseif valueType == "function" then
             string = string .. ":function" .. FunctionDeepToString(value, "(%s)") .. "\n"
         else
+            --region TODO extract
             string = string .. ":"
             if field == "__index" and self == value then
                 string = string .. "(__index is table it self)"
@@ -120,6 +125,7 @@ local function TableDeepToString(self, indent, isIndentSelf, existMembers)
                 string = string .. tostring(value)
             end
             string = string .. "\n"
+            --endregion
         end
     end
 
