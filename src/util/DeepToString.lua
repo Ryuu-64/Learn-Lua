@@ -79,7 +79,7 @@ local function TryGetExistMember(table, variable)
     return nil
 end
 
-local function GetTableString(field, value, indent, existMembers, TableDeepToString)
+local function InternalTableDeepToString(field, value, indent, existMembers, TableDeepToString)
     local existMember = TryGetExistMember(existMembers, value)
     if existMember == nil then
         table.insert(existMembers, { field = field, value = value })
@@ -87,6 +87,17 @@ local function GetTableString(field, value, indent, existMembers, TableDeepToStr
     else
         return ":" .. tostring(value) .. "(nested:" .. tostring(existMember.field) .. ")\n"
     end
+end
+
+local function InternalOtherDeepToString(self, field, value)
+    local string = ":"
+    if field == "__index" and self == value then
+        string = string .. "<self reference>"
+    else
+        string = string .. tostring(value)
+    end
+    string = string .. "\n"
+    return string
 end
 
 local function TableDeepToString(self, indent, isIndentSelf, existMembers)
@@ -113,19 +124,11 @@ local function TableDeepToString(self, indent, isIndentSelf, existMembers)
         local valueType = type(value)
         string = string .. string.rep(" ", indent) .. tostring(field)
         if valueType == "table" and value ~= self then
-            string = string .. GetTableString(field, value, indent, existMembers, TableDeepToString)
+            string = string .. InternalTableDeepToString(field, value, indent, existMembers, TableDeepToString)
         elseif valueType == "function" then
             string = string .. ":function" .. FunctionDeepToString(value, "(%s)") .. "\n"
         else
-            --region TODO extract
-            string = string .. ":"
-            if field == "__index" and self == value then
-                string = string .. "(__index is table it self)"
-            else
-                string = string .. tostring(value)
-            end
-            string = string .. "\n"
-            --endregion
+            string = string .. InternalOtherDeepToString(self, field, value)
         end
     end
 
