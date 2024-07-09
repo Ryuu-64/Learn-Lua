@@ -1,6 +1,7 @@
 ﻿local DeepToString = {}
 
 local DEFAULT_INDENT_COUNT = 2
+local EXIST_MEMBERS = {}
 
 local function FunctionDeepToString(self)
     local info = debug.getinfo(self, "uS")
@@ -67,7 +68,6 @@ local function YamlSafeToString(self)
     return selfToString
 end
 
---- @param self table
 local function GetSortedTableMembers(self)
     local members = {}
     for k, v in pairs(self) do
@@ -88,11 +88,11 @@ local function TryGetExistMember(table, variable)
     return nil
 end
 
-local function InternalTableDeepToString(field, value, indent, existMembers, TableDeepToString)
-    local existMember = TryGetExistMember(existMembers, value)
+local function InternalTableDeepToString(field, value, indent, TableDeepToString)
+    local existMember = TryGetExistMember(EXIST_MEMBERS, value)
     if existMember == nil then
-        table.insert(existMembers, { field = field, value = value })
-        return TableDeepToString(value, indent + DEFAULT_INDENT_COUNT, false, existMembers)
+        table.insert(EXIST_MEMBERS, { field = field, value = value })
+        return TableDeepToString(value, indent, false)
     else
         return ": " .. YamlSafeToString(value) .. " <nested:" .. tostring(existMember.field) .. ">\n"
     end
@@ -109,13 +109,13 @@ local function OtherDeepToString(self, field, value)
     return string
 end
 
-local function TableMetaTableDeepToString(self, indent, existMembers, TableDeepToString)
+local function TableMetaTableDeepToString(self, indent, TableDeepToString)
     local deepToString = ""
     local getSelfMetatable = getmetatable(self)
     if getSelfMetatable ~= nil and getSelfMetatable ~= self then
         deepToString = deepToString .. string.rep(" ", indent) .. "metatable:"
         deepToString = deepToString .. TableDeepToString(
-            getSelfMetatable, indent + DEFAULT_INDENT_COUNT, false, existMembers
+            getSelfMetatable, indent, false
         )
     end
     return deepToString
@@ -134,7 +134,7 @@ local function TableSelfDeepToString(self, indent, isIndentSelf, membersToString
     return selfToString
 end
 
-local function TableMembersDeepToString(self, indent, existMembers, TableDeepToString)
+local function TableMembersDeepToString(self, indent, TableDeepToString)
     local membersToString = ""
     local members = GetSortedTableMembers(self)
     for i = 1, #members do
@@ -145,7 +145,7 @@ local function TableMembersDeepToString(self, indent, existMembers, TableDeepToS
         membersToString = membersToString .. string.rep(" ", indent) .. tostring(field)
         if valueType == "table" and value ~= self then
             membersToString = membersToString ..
-                InternalTableDeepToString(field, value, indent, existMembers, TableDeepToString)
+                InternalTableDeepToString(field, value, indent, TableDeepToString)
         elseif valueType == "function" then
             membersToString = membersToString .. ": " .. FunctionDeepToString(value) .. "\n"
         else
@@ -155,11 +155,12 @@ local function TableMembersDeepToString(self, indent, existMembers, TableDeepToS
     return membersToString
 end
 
-local function TableDeepToString(self, indent, isIndentSelf, existMembers)
-    table.insert(existMembers, { field = "self", value = self })
-    local membersToString = TableMembersDeepToString(self, indent, existMembers, TableDeepToString)
-    local metatableToString = TableMetaTableDeepToString(self, indent, existMembers, TableDeepToString)
-    local selfToString = TableSelfDeepToString(self, indent, isIndentSelf, membersToString, metatableToString)
+local function TableDeepToString(self, indent, isIndentSelf)
+    table.insert(EXIST_MEMBERS, { field = "self", value = self })
+    local membersToString = TableMembersDeepToString(self, indent + DEFAULT_INDENT_COUNT, TableDeepToString)
+    local metatableToString = TableMetaTableDeepToString(self, indent + DEFAULT_INDENT_COUNT, TableDeepToString)
+    local selfToString = TableSelfDeepToString(self, indent + DEFAULT_INDENT_COUNT, isIndentSelf, membersToString,
+        metatableToString)
     return selfToString .. membersToString .. metatableToString
 end
 --endregion
@@ -171,7 +172,8 @@ function DeepToString.of(self)
 
     local selfType = type(self)
     if selfType == "table" then
-        return TableDeepToString(self, DEFAULT_INDENT_COUNT, false, {})
+        EXIST_MEMBERS = {}
+        return TableDeepToString(self, 0, false) -- TODO try remove isIndentSelf
     end
 
     if selfType == "function" then

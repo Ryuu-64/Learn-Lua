@@ -1,5 +1,10 @@
-local DeepToString = require("util.DeepToString")
-local DeepToStringObject = require("oop.DeepToStringObject")
+local Debugger           = require "debug.emmy.Debugger"
+local DeepToString       = require "util.DeepToString"
+local DeepToStringObject = require "oop.DeepToStringObject"
+
+Debugger.Connect()
+local class = require "30log"
+print(class)
 
 print("" .. DeepToString.of(nil))
 
