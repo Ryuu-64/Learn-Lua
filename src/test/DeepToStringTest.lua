@@ -77,3 +77,14 @@ local tableWith__index = {
 }
 print("\nprint(DeepToString.of(tableWith__index))")
 print(DeepToString.of(tableWith__index))
+
+local emptyTable = {
+}
+print("\nprint(DeepToString.of(emptyTable))")
+print(DeepToString.of(emptyTable))
+
+local innerEmptyTable = {
+    innerTable = {}
+}
+print("\nprint(DeepToString.of(innerEmptyTable))")
+print(DeepToString.of(innerEmptyTable))

@@ -1,0 +1,49 @@
+﻿(table:0000000000fc2020):
+  a: 1
+  b: 2
+  innerTable(table:0000000000fc1f60):
+    c: 1
+    d: 2
+  bar: function(param1, param2, ...)
+  foo: function(param1, param2)
+
+
+(table:0000000000c617a0):
+  filedInT1: 1
+  nestedTableInT1(table:0000000000c615a0):
+    filedInT2: 2
+    nestedTableInT2: table:0000000000c617a0 <nested:self>
+
+
+(table:00000000011a8ea0):
+  metatable:(table:00000000011a1fa0):
+    _type: DeepToStringObject
+    filedE: 1
+    __index: <self reference>
+    FooBar: function(param1)
+    new: function(param1)
+    metatable:(table:00000000011a19a0):
+      _type: Object
+      __index: <self reference>
+      GetType: function(param1)
+      new: function(param1)
+
+
+(table:0000000000fcb7a0):
+  bar: bar
+  foo: foo
+  metatable:(table:0000000000fcbde0):
+    __index: function(param1, param2)
+
+
+(nil):
+  bar: bar
+  foo: foo
+  metatable:(table:0000000000fcb560):
+    __tostring: function()
+
+
+self (table:000000000119f940):
+  bar: foo
+  foo: bar
+  __index: function(param1, param2)

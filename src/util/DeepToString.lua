@@ -1,8 +1,8 @@
 ﻿local DeepToString = {}
 
-local DEFAULT_INDENT = 4
+local DEFAULT_INDENT_COUNT = 2
 
-local function FunctionDeepToString(self, formatString)
+local function FunctionDeepToString(self)
     local info = debug.getinfo(self, "uS")
     local paramLength = info.nparams
     local isVarArg = info.isvararg
@@ -14,7 +14,8 @@ local function FunctionDeepToString(self, formatString)
         table.insert(params, "...")
     end
 
-    return string.format(formatString, table.concat(params, ", "))
+    --return string.format(formatString, table.concat(params, ", "))
+    return string.format("function(%s)", table.concat(params, ", "))
 end
 
 --region table
@@ -50,6 +51,23 @@ local function TableMemberSorter(a, b)
     end
 end
 
+--- tostring(self) maybe nil when override __tostring
+local function SafeToString(self)
+    local selfToString = tostring(self)
+    if selfToString == nil then
+        return "nil"
+    end
+
+    return selfToString
+end
+
+local function YamlSafeToString(self)
+    local selfToString = SafeToString(self)
+    selfToString = string.gsub(selfToString, "table: ", "table:")
+    return selfToString
+end
+
+--- @param self table
 local function GetSortedTableMembers(self)
     local members = {}
     for k, v in pairs(self) do
@@ -83,14 +101,14 @@ local function InternalTableDeepToString(field, value, indent, existMembers, Tab
     local existMember = TryGetExistMember(existMembers, value)
     if existMember == nil then
         table.insert(existMembers, { field = field, value = value })
-        return TableDeepToString(value, indent + DEFAULT_INDENT, false, existMembers)
+        return TableDeepToString(value, indent + DEFAULT_INDENT_COUNT, false, existMembers)
     else
-        return ":" .. tostring(value) .. "(nested:" .. tostring(existMember.field) .. ")\n"
+        return ": " .. YamlSafeToString(value) .. " <nested:" .. tostring(existMember.field) .. ">\n"
     end
 end
 
 local function InternalOtherDeepToString(self, field, value)
-    local string = ":"
+    local string = ": "
     if field == "__index" and self == value then
         string = string .. "<self reference>"
     else
@@ -100,47 +118,58 @@ local function InternalOtherDeepToString(self, field, value)
     return string
 end
 
-local function TableDeepToString(self, indent, isIndentSelf, existMembers)
-    local string = ""
-
-    if isIndentSelf then
-        string = string .. string.rep(" ", indent)
+local function MetaTableDeepToString(self, indent, existMembers, TableDeepToString)
+    local deepToString = ""
+    local getSelfMetatable = getmetatable(self)
+    if getSelfMetatable ~= nil and getSelfMetatable ~= self then
+        deepToString = deepToString .. string.rep(" ", indent) .. "metatable:"
+        deepToString = deepToString .. TableDeepToString(
+            getSelfMetatable, indent + DEFAULT_INDENT_COUNT, false, existMembers
+        )
     end
+    return deepToString
+end
 
+local function TableDeepToString(self, indent, isIndentSelf, existMembers)
     table.insert(existMembers, { field = "self", value = self })
 
-    local selfToString = tostring(self)
-    -- tostring(self) maybe nil when override __tostring
-    if selfToString == nil then
-        selfToString = "nil"
-    end
-    string = string .. "(" .. selfToString .. ")" .. ":\n"
-
+    local childString = ""
+    --region member
     local members = GetSortedTableMembers(self)
     for i = 1, #members do
         local member = members[i]
         local field = member.field
         local value = member.value
         local valueType = type(value)
-        string = string .. string.rep(" ", indent) .. tostring(field)
+        childString = childString .. string.rep(" ", indent) .. tostring(field)
         if valueType == "table" and value ~= self then
-            string = string .. InternalTableDeepToString(field, value, indent, existMembers, TableDeepToString)
+            childString = childString ..
+                InternalTableDeepToString(field, value, indent, existMembers, TableDeepToString)
         elseif valueType == "function" then
-            string = string .. ":function" .. FunctionDeepToString(value, "(%s)") .. "\n"
+            childString = childString .. ": " .. FunctionDeepToString(value) .. "\n"
         else
-            string = string .. InternalOtherDeepToString(self, field, value)
+            childString = childString .. InternalOtherDeepToString(self, field, value)
         end
-    end
-
-    --region metatable
-    local getSelfMetatable = getmetatable(self)
-    if getSelfMetatable ~= nil and getSelfMetatable ~= self then
-        string = string .. string.rep(" ", indent) .. "metatable:"
-        string = string .. TableDeepToString(getSelfMetatable, indent + DEFAULT_INDENT, false, existMembers)
     end
     --endregion
 
-    return string
+    --region metatable
+    childString = childString .. MetaTableDeepToString(self, indent, existMembers, TableDeepToString)
+    --endregion
+
+    local selfToString = ""
+    --region self
+    if isIndentSelf then
+        selfToString = selfToString .. string.rep(" ", indent)
+    end
+    selfToString = selfToString .. "(" .. YamlSafeToString(self) .. ")"
+    if childString ~= "" then
+        selfToString = selfToString .. ":"
+    end
+    selfToString = selfToString .. "\n"
+    --endregion
+
+    return selfToString .. childString
 end
 --endregion
 
@@ -151,12 +180,14 @@ function DeepToString.of(self)
 
     local selfType = type(self)
     if selfType == "table" then
-        return TableDeepToString(self, DEFAULT_INDENT, false, {})
+        return TableDeepToString(self, DEFAULT_INDENT_COUNT, false, {})
     end
 
     if selfType == "function" then
-        return FunctionDeepToString(self, "function(%s)")
+        return FunctionDeepToString(self)
     end
+
+    return tostring(self)
 end
 
 return DeepToString
