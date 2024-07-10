@@ -1,7 +1,7 @@
 ﻿local DeepToString = {}
 
 local DEFAULT_INDENT_COUNT = 2
-local EXIST_MEMBERS = {}
+local EXIST_TABLE_MEMBERS = {}
 
 local function FunctionDeepToString(self)
     local info = debug.getinfo(self, "uS")
@@ -15,7 +15,6 @@ local function FunctionDeepToString(self)
         table.insert(params, "...")
     end
 
-    --return string.format(formatString, table.concat(params, ", "))
     return string.format("function(%s)", table.concat(params, ", "))
 end
 
@@ -77,9 +76,9 @@ local function GetSortedTableMembers(self)
     return members
 end
 
-local function TryGetExistMember(table, variable)
-    for i = 1, #table do
-        local member = table[i]
+local function TryGetExistMember(variable)
+    for i = 1, #EXIST_TABLE_MEMBERS do
+        local member = EXIST_TABLE_MEMBERS[i]
         if variable == member.value then
             return member
         end
@@ -89,78 +88,79 @@ local function TryGetExistMember(table, variable)
 end
 
 local function InternalTableDeepToString(field, value, indent, TableDeepToString)
-    local existMember = TryGetExistMember(EXIST_MEMBERS, value)
+    local existMember = TryGetExistMember(value)
     if existMember == nil then
-        table.insert(EXIST_MEMBERS, { field = field, value = value })
-        return TableDeepToString(value, indent, false)
-    else
-        return ": " .. YamlSafeToString(value) .. " <nested:" .. tostring(existMember.field) .. ">\n"
+        table.insert(EXIST_TABLE_MEMBERS, { field = field, value = value })
+        return TableDeepToString(value, indent)
     end
+
+    return ": " .. YamlSafeToString(value) .. " <nested:" .. tostring(existMember.field) .. ">\n"
 end
 
 local function OtherDeepToString(self, field, value)
-    local string = ": "
+    local toString = ": "
     if field == "__index" and self == value then
-        string = string .. "<self reference>"
+        toString = toString .. "<self reference>"
     else
-        string = string .. tostring(value)
+        toString = toString .. tostring(value)
     end
-    string = string .. "\n"
-    return string
+    toString = toString .. "\n"
+    return toString
 end
 
 local function TableMetaTableDeepToString(self, indent, TableDeepToString)
-    local deepToString = ""
+    local toString = ""
     local getSelfMetatable = getmetatable(self)
-    if getSelfMetatable ~= nil and getSelfMetatable ~= self then
-        deepToString = deepToString .. string.rep(" ", indent) .. "metatable:"
-        deepToString = deepToString .. TableDeepToString(
-            getSelfMetatable, indent, false
-        )
+    if getSelfMetatable == nil then
+        return toString
     end
-    return deepToString
+
+    toString = toString .. string.rep(" ", indent) .. "metatable:"
+
+    if getSelfMetatable == self then
+        toString = toString .. " <self reference>"
+        return toString
+    end
+
+    toString = toString .. TableDeepToString(getSelfMetatable, indent)
+    return toString
 end
 
-local function TableSelfDeepToString(self, indent, isIndentSelf, membersToString, metatableToString)
-    local selfToString = ""
-    if isIndentSelf then
-        selfToString = selfToString .. string.rep(" ", indent)
-    end
-    selfToString = selfToString .. "(" .. YamlSafeToString(self) .. ")"
+local function TableSelfDeepToString(self, membersToString, metatableToString)
+    local toString = ""
+    toString = toString .. "(" .. YamlSafeToString(self) .. ")"
     if membersToString ~= "" or metatableToString ~= "" then
-        selfToString = selfToString .. ":"
+        toString = toString .. ":"
     end
-    selfToString = selfToString .. "\n"
-    return selfToString
+    toString = toString .. "\n"
+    return toString
 end
 
 local function TableMembersDeepToString(self, indent, TableDeepToString)
-    local membersToString = ""
+    local toString = ""
     local members = GetSortedTableMembers(self)
     for i = 1, #members do
         local member = members[i]
         local field = member.field
         local value = member.value
         local valueType = type(value)
-        membersToString = membersToString .. string.rep(" ", indent) .. tostring(field)
+        toString = toString .. string.rep(" ", indent) .. tostring(field)
         if valueType == "table" and value ~= self then
-            membersToString = membersToString ..
-                InternalTableDeepToString(field, value, indent, TableDeepToString)
+            toString = toString .. InternalTableDeepToString(field, value, indent, TableDeepToString)
         elseif valueType == "function" then
-            membersToString = membersToString .. ": " .. FunctionDeepToString(value) .. "\n"
+            toString = toString .. ": " .. FunctionDeepToString(value) .. "\n"
         else
-            membersToString = membersToString .. OtherDeepToString(self, field, value)
+            toString = toString .. OtherDeepToString(self, field, value)
         end
     end
-    return membersToString
+    return toString
 end
 
-local function TableDeepToString(self, indent, isIndentSelf)
-    table.insert(EXIST_MEMBERS, { field = "self", value = self })
+local function TableDeepToString(self, indent)
+    table.insert(EXIST_TABLE_MEMBERS, { field = "self", value = self })
     local membersToString = TableMembersDeepToString(self, indent + DEFAULT_INDENT_COUNT, TableDeepToString)
     local metatableToString = TableMetaTableDeepToString(self, indent + DEFAULT_INDENT_COUNT, TableDeepToString)
-    local selfToString = TableSelfDeepToString(self, indent + DEFAULT_INDENT_COUNT, isIndentSelf, membersToString,
-        metatableToString)
+    local selfToString = TableSelfDeepToString(self, membersToString, metatableToString)
     return selfToString .. membersToString .. metatableToString
 end
 --endregion
@@ -172,8 +172,8 @@ function DeepToString.of(self)
 
     local selfType = type(self)
     if selfType == "table" then
-        EXIST_MEMBERS = {}
-        return TableDeepToString(self, 0, false) -- TODO try remove isIndentSelf
+        EXIST_TABLE_MEMBERS = {}
+        return TableDeepToString(self, 0)
     end
 
     if selfType == "function" then

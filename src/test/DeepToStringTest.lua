@@ -3,8 +3,6 @@ local DeepToString       = require "util.DeepToString"
 local DeepToStringObject = require "oop.DeepToStringObject"
 
 Debugger.Connect()
-local class = require "30log"
-print(class)
 
 print("" .. DeepToString.of(nil))
 
@@ -93,3 +91,10 @@ local innerEmptyTable = {
 }
 print("\nprint(DeepToString.of(innerEmptyTable))")
 print(DeepToString.of(innerEmptyTable))
+
+
+local tableMetaTableIsSelf = {
+}
+setmetatable(tableMetaTableIsSelf, tableMetaTableIsSelf)
+print("\nprint(DeepToString.of(tableMetaTableIsSelf))")
+print(DeepToString.of(tableMetaTableIsSelf))
