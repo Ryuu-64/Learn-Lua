@@ -1,10 +1,4 @@
-﻿local Object = require("oop.object")
-
-local function new(isSealedClass)
-    if isSealedClass then
-        return function(self)
-            local instance = Object.new(self)
-            return instance
-        end
-    end
-end
+﻿local Debugger           = require "debug.emmy.Debugger"
+local Object             = require "oop.Object"
+local DeepToString       = require "util.DeepToString"
+local DeepToStringObject = require "oop.DeepToStringObject"

@@ -1,4 +1,4 @@
-﻿local Object = require("oop.object")
+﻿local Object = require "oop.Object"
 
 --- @class DeepToStringObject:Object
 local DeepToStringObject = setmetatable({}, Object)
@@ -7,8 +7,7 @@ DeepToStringObject._type = "DeepToStringObject"
 DeepToStringObject.filedE = "1"
 
 function DeepToStringObject:new()
-    local instance = Object.new(self)
-    return instance
+    return Object.new(self)
 end
 
 function DeepToStringObject:FooBar()

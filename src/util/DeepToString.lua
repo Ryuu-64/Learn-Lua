@@ -15,7 +15,7 @@ local function FunctionDeepToString(self)
         table.insert(params, "...")
     end
 
-    return string.format("function(%s)", table.concat(params, ", "))
+    return string.format("function(%s) %s", table.concat(params, ", "), tostring(self):match("function: (.+)"))
 end
 
 --region table
@@ -36,7 +36,7 @@ local function GetTypePriority(value)
     return 1
 end
 
-local function TableMemberSorter(a, b)
+local function TableMemberComparator(a, b)
     local priorityA = GetTypePriority(a.value)
     local priorityB = GetTypePriority(b.value)
 
@@ -44,7 +44,18 @@ local function TableMemberSorter(a, b)
         return priorityA < priorityB
     end
 
-    if type(a.field) == "userdata" or type(b.field) == "userdata" then
+    local typeAField = type(a.field)
+    local typeBField = type(b.field)
+    if typeAField ~= typeBField then
+        priorityA = GetTypePriority(a.field)
+        priorityB = GetTypePriority(b.field)
+        if priorityA ~= priorityB then
+            return priorityA < priorityB
+        end
+        return false
+    end
+
+    if typeAField == "userdata" or typeBField == "userdata" then
         return false
     else
         return a.field < b.field
@@ -72,7 +83,7 @@ local function GetSortedTableMembers(self)
     for k, v in pairs(self) do
         table.insert(members, { field = k, value = v })
     end
-    table.sort(members, TableMemberSorter)
+    table.sort(members, TableMemberComparator)
     return members
 end
 
