@@ -3,7 +3,7 @@
 --- @class DeepToStringObject:Object
 local DeepToStringObject = setmetatable({}, Object)
 DeepToStringObject.__index = DeepToStringObject
-DeepToStringObject._type = "DeepToStringObject"
+DeepToStringObject._className = "DeepToStringObject"
 DeepToStringObject.filedE = "1"
 
 function DeepToStringObject:new()

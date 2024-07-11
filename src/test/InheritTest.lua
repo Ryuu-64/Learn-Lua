@@ -6,7 +6,7 @@ local DeepToString = require("util.DeepToString")
 local Inherit = setmetatable({}, Object)
 Inherit.__index = Inherit
 Inherit.field = 1
-Inherit._type = "Inherit"
+Inherit._className = "Inherit"
 
 function Inherit:new()
     local instance = Object.new(self)
@@ -16,4 +16,4 @@ end
 
 local inherit = Inherit:new()
 print(DeepToString.of(inherit))
-print(inherit:GetType())
+print(inherit:GetClassName())

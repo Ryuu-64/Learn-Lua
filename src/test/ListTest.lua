@@ -1,6 +1,7 @@
-﻿local List         = require("oop.collection.List")
-local Debugger     = require "debug.emmy.Debugger"
-local DeepToString = require "util.DeepToString"
+﻿local List          = require "oop.collection.List"
+local MetadataTable = require "oop.MetadataTable"
+local Debugger      = require "debug.emmy.Debugger"
+local DeepToString  = require "util.DeepToString"
 
 Debugger.Connect()
 local list = List:new()
@@ -14,6 +15,7 @@ list:Add("watermelon")
 list:Add("peach")
 list:Add("strawberry")
 list:Add("pineapple")
+print(DeepToString.of(list))
 
 print(list:Get(2))  -- 输出：banana
 list:RemoveAt(1)
@@ -25,7 +27,6 @@ print(DeepToString.of(list.items))
 list:Reverse()
 print(DeepToString.of(list.items))
 
-for i, v in ipairs(list) do
-    print(i)
-    print(v)
-end
+print(list:GetClassName())
+
+print(DeepToString.of(MetadataTable))

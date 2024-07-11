@@ -3,7 +3,7 @@
 --- @class Dictionary:Object
 local Dictionary = setmetatable({}, Object)
 Dictionary.__index = Dictionary
-Dictionary._type = "Dictionary"
+Dictionary:SetClassName("Dictionary")
 
 function Dictionary:new()
     local instance = Object.new(self)

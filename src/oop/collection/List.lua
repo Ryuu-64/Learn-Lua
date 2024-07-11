@@ -1,20 +1,9 @@
-﻿local Object = require("oop.Object")
-local DeepToString = require "util.DeepToString"
+﻿local Object = require "oop.Object"
+local Runtime = require "oop.Runtime"
 
-
--- 创建一个新的元表，继承自 Object
-local newMetatable = {}
-setmetatable(newMetatable, { __index = Object })
-
--- 定义 __ipairs 方法
-newMetatable.__ipairs = function(tbl)
-    return ipairs(tbl)
-end
-
---- @class List:Object
-local List = setmetatable({}, newMetatable)
-print(DeepToString.of(List))
-List.__index = List
+---
+--- @class List:Object Represents a list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.
+local List = Runtime.inherit(Object, "List")
 
 function List:new()
     local instance = Object.new(self)
@@ -26,6 +15,15 @@ end
 --- Adds an object to the end of the List
 function List:Add(item)
     table.insert(self.items, item)
+end
+
+---
+--- Add all objects to the end of the List
+--- @param list List
+function List:AddAll(list)
+    for i = 1, list.items do
+        table.insert(self.items, list.items[i])
+    end
 end
 
 ---
