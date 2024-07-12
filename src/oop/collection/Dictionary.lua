@@ -1,30 +1,30 @@
-﻿local Object = require("oop.Object")
+﻿local Runtime = require "oop.Runtime"
+local Object = require "oop.Object"
 
+---
 --- @class Dictionary:Object
-local Dictionary = setmetatable({}, Object)
-Dictionary.__index = Dictionary
-Dictionary:SetClassName("Dictionary")
+local Dictionary = Runtime.inherit("Dictionary", Object)
 
 function Dictionary:new()
-    local instance = Object.new(self)
-    instance.data = {}
-    return instance
+    local dictionary = Object.new(self)
+    dictionary.pairs = {}
+    return dictionary
 end
 
 function Dictionary:Add(key, value)
-    self.data[key] = value
+    self.pairs[key] = value
 end
 
 function Dictionary:Get(key)
-    return self.data[key]
+    return self.pairs[key]
 end
 
 function Dictionary:Remove(key)
-    self.data[key] = nil
+    self.pairs[key] = nil
 end
 
 function Dictionary:ContainsKey(key)
-    return self.data[key] ~= nil
+    return self.pairs[key] ~= nil
 end
 
 return Dictionary

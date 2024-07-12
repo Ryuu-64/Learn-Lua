@@ -3,7 +3,7 @@ local Runtime = require "oop.Runtime"
 
 ---
 --- @class List:Object Represents a list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.
-local List = Runtime.inherit(Object, "List")
+local List = Runtime.inherit("List", Object)
 
 function List:new()
     local instance = Object.new(self)

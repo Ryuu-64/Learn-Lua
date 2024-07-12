@@ -30,3 +30,8 @@ print(DeepToString.of(list.items))
 print(list:GetClassName())
 
 print(DeepToString.of(MetadataTable))
+
+local parentClass = MetadataTable.GetParent(List)
+print("print(DeepToString.of(parentClass))")
+print(DeepToString.of(parentClass))
+print(DeepToString.of(MetadataTable.GetParent(parentClass)))

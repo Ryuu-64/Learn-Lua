@@ -57,6 +57,8 @@ local function TableMemberComparator(a, b)
 
     if typeAField == "userdata" or typeBField == "userdata" then
         return false
+    elseif typeAField == "table" or typeBField == "table" then
+        return false
     else
         return a.field < b.field
     end
@@ -105,7 +107,7 @@ local function InternalTableDeepToString(field, value, indent, TableDeepToString
         return TableDeepToString(value, indent)
     end
 
-    return ": " .. YamlSafeToString(value) .. " <nested:" .. tostring(existMember.field) .. ">\n"
+    return ": " .. YamlSafeToString(value) .. " <nested in:" .. tostring(existMember.field) .. ">\n"
 end
 
 local function OtherDeepToString(self, field, value)

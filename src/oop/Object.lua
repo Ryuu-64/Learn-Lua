@@ -1,11 +1,21 @@
-﻿local Runtime = require "oop.Runtime"
+﻿local Class = require "oop.Class"
+local DummyClass = require "oop.DummyClass"
 
 ---
---- @class Object Supports all classes in the class hierarchy and provides low-level services to derived classes. It is the root of the type hierarchy.
-local DummyClass
-local Object = Runtime.inherit(Object, "List")
-Object.__index = Object
-Object._className = "Object"
+---
+---
+--- **Overrides new() function to instantiate**
+---
+--- Assume the class is MyClass, and it have field "foo" and "bar" in it
+--- function MyClass:new()
+---     local myInstance = Object.new(self)
+---     myInstance.foo = 42
+---     myInstance.bar = 37
+---     return myInstance
+--- end
+---
+--- @class Object:DummyClass Supports all classes in the class hierarchy and provides low-level services to derived classes. It is the root of the type hierarchy.
+local Object = Class.extend("Object", DummyClass)
 
 function Object:new()
     return setmetatable({}, self)
@@ -16,14 +26,6 @@ end
 --- @param object Object
 function Object:Equals(object)
     return self == object
-end
-
-function Object:SetClassName(className)
-    self._className = className
-end
-
-function Object:GetClassName()
-    return self._className
 end
 
 return Object
