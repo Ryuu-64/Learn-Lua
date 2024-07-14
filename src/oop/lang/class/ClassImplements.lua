@@ -1,70 +1,8 @@
-﻿local Type = require "oop.constant.Type"
-local DummyClass = require "oop.DummyClass"
-local MetadataTable = require "oop.MetadataTable"
-local Interface = require "oop.Interface"
+﻿local InterfaceValidator = require "oop.lang.interface.InterfaceValidator"
+local ClassValidator = require "oop.lang.class.ClassValidator"
 
-local Class = {}
-
-local function Is(class)
-    if class._name == nil then
-        return false
-    end
-
-    if class._type ~= Type.CLASS then
-        return false
-    end
-
-    if type(class._interfaces) ~= "table" then
-        return false
-    end
-
-    return true
-end
-
-local function CanExtend(name, baseClass)
-    if not Is(baseClass) then
-        --error("Invalid base class, parameter must be Class")
-    end
-
-    if name == "Object" and baseClass ~= DummyClass then
-        --error("Invalid runtime inherit, Object parent must be DummyClass")
-        return false
-    end
-
-    if name ~= "Object" and baseClass == DummyClass then
-        --error("Invalid runtime inherit, Class parent can't be DummyClass")
-        return false
-    end
-
-    if type(name) ~= "string" then
-        --error("Invalid class name:" .. tostring(name))
-        return false
-    end
-
-    if MetadataTable.HasClassForName(name) then
-        --error("Class already exist, class name:" .. name)
-        return false
-    end
-
-    return true
-end
-
-function Class.extend(name, baseClass)
-    if not CanExtend(name, baseClass) then
-        error("extend error")
-        return
-    end
-
-    local class = setmetatable({}, baseClass)
-    class.__index = class
-    class._name = name
-    class._type = Type.CLASS
-    class._interfaces = {}
-
-    MetadataTable.AddClass(class, name)
-    MetadataTable.AddExtend(class, baseClass)
-    return class
-end
+---@class ClassImplements
+local ClassImplements = {}
 
 local function GetFunctionInfoTable(classOrInterface)
     local functionInfoTable = {}
@@ -82,11 +20,11 @@ local function GetFunctionInfoTable(classOrInterface)
 end
 
 local function CanImplement(class, interface)
-    if not Is(class) then
+    if not ClassValidator.Is(class) then
         return false
     end
 
-    if not Interface.is(interface) then
+    if not InterfaceValidator.is(interface) then
         return false
     end
 
@@ -110,15 +48,18 @@ end
 local function CantImplementFunctionReason(functionName, infoInClass, infoInInterface)
     local reason = ""
     if infoInClass == nil then
-        reason = "No such function."
-    elseif infoInClass.isVarArg ~= infoInInterface.isVarArg then
-        reason = "Incorrect 'Variable Number of Arguments'. " ..
-            "Expected " .. tostring(infoInInterface.isVarArg) .. "," ..
-            " but " .. tostring(infoInClass.isVarArg) .. " was provided."
-    elseif infoInClass.paramsCount ~= infoInInterface.paramsCount then
-        reason = "Incorrect number of arguments. " ..
-            "Expected " .. infoInInterface.paramsCount .. " arguments," ..
-            "but " .. infoInClass.paramsCount .. " was provided."
+        reason = string.rep(" ", 4) .. "No such function.\n"
+    else
+        if infoInClass.isVarArg ~= infoInInterface.isVarArg then
+            reason = reason .. string.rep(" ", 4) .. "Incorrect 'Variable Number of Arguments'. " ..
+                "Expected " .. tostring(infoInInterface.isVarArg) .. "," ..
+                " but " .. tostring(infoInClass.isVarArg) .. " was provided.\n"
+        end
+        if infoInClass.paramsCount ~= infoInInterface.paramsCount then
+            reason = reason .. string.rep(" ", 4) .. "Incorrect number of arguments. " ..
+                "Expected " .. infoInInterface.paramsCount .. " arguments," ..
+                "but " .. infoInClass.paramsCount .. " was provided.\n"
+        end
     end
 
     if reason == "" then
@@ -126,21 +67,22 @@ local function CantImplementFunctionReason(functionName, infoInClass, infoInInte
     end
 
     return
-        "Function '" .. functionName .. "' is not implemented. " .. reason .. "\n"
+        string.rep(" ", 2) .. "Function '" .. functionName .. "' is not implemented:\n" ..
+        reason .. "\n"
 end
 
 local function CantImplementInterfaceReason(class, interface)
-    if not Is(class) then
+    if not ClassValidator.Is(class) then
         return "not a class"
     end
 
-    if not Interface.is(interface) then
+    if not InterfaceValidator.is(interface) then
         return "not a interface"
     end
 
     local infoListInInterface = GetFunctionInfoTable(interface)
     local infoListInClass = GetFunctionInfoTable(class)
-    local interfaceReason = "Can't implement interface " .. interface._name .. ".\n"
+    local interfaceReason = "Can't implement interface '" .. interface._name .. "':\n"
     local functionReason = ""
     for name, infoInInterface in pairs(infoListInInterface) do
         local infoInClass = infoListInClass[name]
@@ -183,7 +125,14 @@ local function CantImplementInterfaceReasons(class, interfaces)
         local interface = allInterfaces[i]
         reasons = reasons .. CantImplementInterfaceReason(class, interface)
     end
-    return reasons
+
+    local interfaceNames = {}
+    for i = 1, #interfaces do
+        table.insert(interfaceNames, "'" .. interfaces[i]._name .. "'")
+    end
+    return "Error implementing interfaces " ..
+        table.concat(interfaceNames, ", ") .. " for '" .. class._name .. "':\n" ..
+        reasons
 end
 
 local function CanImplements(class, interfaces)
@@ -198,7 +147,7 @@ local function CanImplements(class, interfaces)
     return true
 end
 
-function Class.implements(class, interfaces)
+function ClassImplements.implements(class, interfaces)
     if not CanImplements(class, interfaces) then
         error(CantImplementInterfaceReasons(class, interfaces))
         return
@@ -207,4 +156,4 @@ function Class.implements(class, interfaces)
     class._interfaces = interfaces
 end
 
-return Class
+return ClassImplements

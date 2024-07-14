@@ -1,3 +1,0 @@
-﻿local Runtime = {}
-
-return Runtime

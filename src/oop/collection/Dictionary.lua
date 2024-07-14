@@ -1,14 +1,13 @@
-﻿local Runtime = require "oop.Runtime"
-local Object = require "oop.Object"
+﻿local Class = require "oop.Class"
 
 ---
---- @class Dictionary:Object
-local Dictionary = Runtime.inherit("Dictionary", Object)
+---@class Dictionary:Object
+local Dictionary = Class.class("Dictionary")
 
-function Dictionary:new()
-    local dictionary = Object.new(self)
-    dictionary.pairs = {}
-    return dictionary
+function Dictionary.new(class)
+    local instance = setmetatable({}, class)
+    instance.pairs = {}
+    return instance
 end
 
 function Dictionary:Add(key, value)

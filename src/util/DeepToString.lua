@@ -64,7 +64,7 @@ local function TableMemberComparator(a, b)
     end
 end
 
---- tostring(self) maybe nil when override __tostring
+---tostring(self) maybe nil when override __tostring
 local function SafeToString(self)
     local selfToString = tostring(self)
     if selfToString == nil then

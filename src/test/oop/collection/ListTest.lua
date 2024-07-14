@@ -1,5 +1,5 @@
 ﻿local List          = require "oop.collection.List"
-local MetadataTable = require "oop.MetadataTable"
+local MetadataTable = require "oop.lang.runtime.MetadataTable"
 local Debugger      = require "debug.emmy.Debugger"
 local DeepToString  = require "util.DeepToString"
 
@@ -26,8 +26,6 @@ print(list:Get(2))  -- 输出：orange
 print(DeepToString.of(list.items))
 list:Reverse()
 print(DeepToString.of(list.items))
-
-print(list:GetClassName())
 
 print(DeepToString.of(MetadataTable))
 

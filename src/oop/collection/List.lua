@@ -1,25 +1,22 @@
-﻿local Object = require "oop.Object"
-local Runtime = require "oop.Runtime"
+﻿local Class = require "oop.Class"
 
 ---
---- @class List:Object Represents a list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.
-local List = Runtime.inherit("List", Object)
+---@class List:Object Represents a list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.
+local List = Class.class("List")
 
-function List:new()
-    local instance = Object.new(self)
-    instance.items = {}
-    return instance
+function List._constructor(this)
+    this.items = {}
 end
 
 ---
---- Adds an object to the end of the List
+---Adds an object to the end of the List
 function List:Add(item)
     table.insert(self.items, item)
 end
 
 ---
---- Add all objects to the end of the List
---- @param list List
+---Add all objects to the end of the List
+---@param list List
 function List:AddAll(list)
     for i = 1, list.items do
         table.insert(self.items, list.items[i])
@@ -27,19 +24,19 @@ function List:AddAll(list)
 end
 
 ---
---- Removes all elements from the List
+---Removes all elements from the List
 function List:Clear()
     self.items = {}
 end
 
 ---
---- Gets the element at the specified index.
+---Gets the element at the specified index.
 function List:Get(index)
     return self.items[index]
 end
 
 ---
---- Determines whether an element is in the List
+---Determines whether an element is in the List
 function List:Contains(item)
     for _, currItem in ipairs(self.items) do
         if currItem == item then
@@ -50,8 +47,8 @@ function List:Contains(item)
 end
 
 ---
---- The zero-based index of the first occurrence of an element that matches the conditions defined by match, if found; otherwise, -1.
---- @return boolean Returns the zero-based index of the first occurrence of a value in the List
+---The zero-based index of the first occurrence of an element that matches the conditions defined by match, if found; otherwise, -1.
+---@return boolean Returns the zero-based index of the first occurrence of a value in the List
 function List:FirstIndexOf(item)
     for i, v in ipairs(self.items) do
         if v == item then
@@ -62,8 +59,8 @@ function List:FirstIndexOf(item)
 end
 
 ---
---- The zero-based index of the last occurrence of an element that matches the conditions defined by match, if found; otherwise, -1.
---- @return boolean Returns the zero-based index of the last occurrence of a value in the List
+---The zero-based index of the last occurrence of an element that matches the conditions defined by match, if found; otherwise, -1.
+---@return boolean Returns the zero-based index of the last occurrence of a value in the List
 function List:LastIndexOf(item)
     for i = #self.items, 1, -1 do
         if self.items[i] == item then
@@ -74,8 +71,8 @@ function List:LastIndexOf(item)
 end
 
 ---
---- Sorts the elements in the List using the specified provided comparator function to compare list elements.
---- @param comparator fun(a:any,b:any) The comparator to use when comparing elements.
+---Sorts the elements in the List using the specified provided comparator function to compare list elements.
+---@param comparator fun(a:any,b:any) The comparator to use when comparing elements.
 function List:Sort(comparator)
     if comparator then
         table.sort(self.items, comparator)
@@ -85,9 +82,9 @@ function List:Sort(comparator)
 end
 
 ---
---- Removes the first occurrence of a specific object from the List
---- @param item any The item to remove from the List
---- @return boolean true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the List
+---Removes the first occurrence of a specific object from the List
+---@param item any The item to remove from the List
+---@return boolean true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the List
 function List:RemoveFirst(item)
     local index = self:FirstIndexOf(item)
     if index ~= -1 then
@@ -99,9 +96,9 @@ function List:RemoveFirst(item)
 end
 
 ---
---- Removes the last occurrence of a specific object from the List
---- @param item any The item to remove from the List
---- @return boolean true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the List
+---Removes the last occurrence of a specific object from the List
+---@param item any The item to remove from the List
+---@return boolean true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the List
 function List:RemoveLast(item)
     local index = self:LastIndexOf(item)
     if index ~= -1 then
@@ -113,13 +110,13 @@ function List:RemoveLast(item)
 end
 
 ---
---- Removes the element at the specified index of the List
+---Removes the element at the specified index of the List
 function List:RemoveAt(index)
     table.remove(self.items, index)
 end
 
 ---
---- Removes all the elements that match the conditions defined by the specified predicate.
+---Removes all the elements that match the conditions defined by the specified predicate.
 ---@param predicate fun(item:any):boolean function that defines the conditions of the elements to remove.
 function List:RemoveAll(predicate)
     local removeCount = 0
@@ -137,7 +134,7 @@ function List:RemoveAll(predicate)
 end
 
 ---
---- Reverses the order of the items in the List
+---Reverses the order of the items in the List
 function List:Reverse()
     local left = 1
     local right = #self.items
@@ -150,7 +147,7 @@ function List:Reverse()
 end
 
 ---
---- Gets the number of elements contained in the List
+---Gets the number of elements contained in the List
 function List:Count()
     return #self.items
 end
