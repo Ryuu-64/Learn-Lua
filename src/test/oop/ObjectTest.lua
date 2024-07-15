@@ -1,22 +1,40 @@
-﻿local DeepToString = require "util.DeepToString"
-local instantiate = require "oop.lang.class.instantiate"
-local class = require "oop.lang.class.class"
+﻿local instantiate = require "oop.lang.class.instantiate"
+local class       = require "oop.lang.class.class"
+local Object      = require "oop.Object"
+local Assert      = require "test.Assert"
 
----@class ObjectTest: Object
-local ObjectTest = class("ObjectTest")
-
-function ObjectTest:new()
-    local this = instantiate(self)
-    this.foo = 37
-    this.bar = 42
-    return this
+local function equals()
+    local a = Object:new()
+    local b = Object:new()
+    Assert.Equals(a, b)
 end
 
-function ObjectTest:__tostring()
-    return self._name .. "(" ..
-        "foo=" .. self.foo ..
-        ", bar=" .. self.bar ..
-        ")"
+local function overrideNew()
+    ---
+    ---@class ObjectOverrideNewTest: Object
+    ---@field foo number
+    ---@field bar number
+    local ObjectOverrideNewTest = class("ObjectTest")
+
+    function ObjectOverrideNewTest:new()
+        ---@type ObjectOverrideNewTest
+        local this = instantiate(self)
+        this.foo = 37
+        this.bar = 42
+        return this
+    end
+
+    local objectOverrideNewTest = ObjectOverrideNewTest:new()
+    Assert.Equals(37, objectOverrideNewTest.foo)
+    Assert.Equals(42, objectOverrideNewTest.bar)
 end
 
-print(DeepToString.of(ObjectTest:new()))
+equals()
+overrideNew()
+
+--function ObjectTest:__tostring()
+--    return self._name .. "(" ..
+--        "foo=" .. self.foo ..
+--        ", bar=" .. self.bar ..
+--        ")"
+--end

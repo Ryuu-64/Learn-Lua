@@ -2,8 +2,9 @@
 local Object = require "oop.Object"
 
 ---
+---@generic T:Object
 ---@class List:Object Represents a list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.
----@field items table<Object>
+---@field items table<T>
 local List = class("List")
 
 function List:__tostring()
@@ -16,10 +17,32 @@ function List:__tostring()
     return "[" .. itemsToString .. "]"
 end
 
-function List:new()
+---
+---@param a List
+---@param b List
+function List.__eq(a, b)
+    if #a.items ~= #b.items then
+        return false
+    end
+
+    for i = 1, #a.items do
+        if a.items[i] ~= b.items[i] then
+            return false
+        end
+    end
+    
+    return true
+end
+
+---@generic T:Object
+---@param items table<T>
+function List:new(items)
     ---@type List
     local this = Object.new(self)
-    this.items = {}
+    if items == nil then
+        items = {}
+    end
+    this.items = items
     return this
 end
 
@@ -33,7 +56,7 @@ end
 ---Add all objects to the end of the List
 ---@param list List
 function List:AddAll(list)
-    for i = 1, list.items do
+    for i = 1, #list.items do
         table.insert(self.items, list.items[i])
     end
 end

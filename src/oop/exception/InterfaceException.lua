@@ -9,7 +9,7 @@ InterfaceException._name = "InterfaceException"
 InterfaceException._type = keyword.class
 InterfaceException._interfaces = {}
 
-ClassMetadataTable.AddClass(InterfaceException, InterfaceException._name)
-ClassMetadataTable.AddBaseClass(InterfaceException, Exception)
+ClassMetadataTable.Add(InterfaceException, InterfaceException._name)
+ClassMetadataTable.AddBase(InterfaceException, Exception)
 
 return InterfaceException

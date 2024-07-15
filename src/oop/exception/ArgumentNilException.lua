@@ -9,7 +9,7 @@ ArgumentNilException._name = "ArgumentNilException"
 ArgumentNilException._type = keyword.class
 ArgumentNilException._interfaces = {}
 
-ClassMetadataTable.AddClass(ArgumentNilException, ArgumentNilException._name)
-ClassMetadataTable.AddBaseClass(ArgumentNilException, ArgumentException)
+ClassMetadataTable.Add(ArgumentNilException, ArgumentNilException._name)
+ClassMetadataTable.AddBase(ArgumentNilException, ArgumentException)
 
 return ArgumentNilException

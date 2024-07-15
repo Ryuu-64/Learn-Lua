@@ -1,5 +1,5 @@
-﻿local ClassMetadataTable = require "oop.lang.runtime.ClassMetadataTable"
-local keyword = require "oop.constant.keyword"
+﻿local keyword = require "oop.constant.keyword"
+local ClassMetadataTable = require "oop.lang.runtime.ClassMetadataTable"
 
 ---
 ---@class Object Supports all classes in the class hierarchy and provides low-level services to derived classes. It is the root of the type hierarchy.
@@ -13,8 +13,33 @@ function Object:__tostring()
     return self._name
 end
 
-ClassMetadataTable.AddClass(Object, Object._name)
-ClassMetadataTable.AddBaseClass(Object, getmetatable(Object))
+---
+---@param a Object
+---@param b Object
+function Object.__eq(a, b)
+    if #a._name ~= #b._name then
+        return false
+    end
+
+    if #a._type ~= #b._type then
+        return false
+    end
+
+    if #a._interfaces ~= #b._interfaces then
+        return false
+    end
+
+    for i = 1, #a._interfaces do
+        if a._interfaces[i] ~= b._interfaces[i] then
+            return false
+        end
+    end
+
+    return true
+end
+
+ClassMetadataTable.Add(Object, Object._name)
+ClassMetadataTable.AddBase(Object, getmetatable(Object))
 
 ---
 ---@return Object
@@ -22,13 +47,6 @@ function Object:new()
     ---@type Object
     local this = setmetatable({}, self)
     return this
-end
-
----
----Determines whether two object instances are equal.
----@param object Object
-function Object:Equals(object)
-    return self == object
 end
 
 return Object

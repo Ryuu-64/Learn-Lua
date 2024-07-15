@@ -9,7 +9,7 @@ NilException._name = "NilException"
 NilException._type = keyword.class
 NilException._interfaces = {}
 
-MetadataTable.AddClass(NilException, NilException._name)
-MetadataTable.AddBaseClass(NilException, Exception)
+MetadataTable.Add(NilException, NilException._name)
+MetadataTable.AddBase(NilException, Exception)
 
 return NilException

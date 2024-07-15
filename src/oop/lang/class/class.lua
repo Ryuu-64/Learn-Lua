@@ -5,7 +5,7 @@ local Object = require "oop.Object"
 
 local class = function(name, extend)
     --region create class
-    if ClassMetadataTable.HasClass(name) then
+    if ClassMetadataTable.Has(name) then
         error("name already exist, name=" .. name)
     end
 
@@ -14,7 +14,7 @@ local class = function(name, extend)
     class._name = name
     class._type = keyword.class
     class._interfaces = {}
-    ClassMetadataTable.AddClass(class, name)
+    ClassMetadataTable.Add(class, name)
     --endregion
 
     --region class extend
@@ -30,7 +30,7 @@ local class = function(name, extend)
     if extend.__tostring ~= nil then
         class.__tostring = extend.__tostring
     end
-    ClassMetadataTable.AddBaseClass(class, extend)
+    ClassMetadataTable.AddBase(class, extend)
     --endregion
 
     return class

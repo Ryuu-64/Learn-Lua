@@ -28,3 +28,7 @@ Assert.Equals("pineapple", list:Get(6))
 list:Reverse()
 
 Assert.Equals("[pineapple, strawberry, peach, watermelon, orange, banana]", tostring(list))
+
+local expected = List:new({ "pineapple", "strawberry", "peach", "watermelon", "orange", "banana" })
+
+Assert.Equals(expected, list)
