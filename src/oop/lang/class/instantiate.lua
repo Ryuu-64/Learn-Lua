@@ -1,4 +1,6 @@
 ﻿---
+--- when object is not define use this method
+---
 ---@param class Type
 ---@return Object
 local function instantiate(class)

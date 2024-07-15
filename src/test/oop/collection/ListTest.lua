@@ -1,12 +1,9 @@
-﻿local List          = require "oop.collection.List"
-local MetadataTable = require "oop.lang.runtime.MetadataTable"
-local Debugger      = require "debug.emmy.Debugger"
-local DeepToString  = require "util.DeepToString"
+﻿local List     = require "oop.collection.List"
+local Debugger = require "debug.emmy.Debugger"
+local Assert   = require "test.Assert"
 
 Debugger.Connect()
 local list = List:new()
-
-print(DeepToString.of(list))
 
 list:Add("apple")
 list:Add("banana")
@@ -15,21 +12,19 @@ list:Add("watermelon")
 list:Add("peach")
 list:Add("strawberry")
 list:Add("pineapple")
-print(DeepToString.of(list))
 
-print(list:Get(2))  -- 输出：banana
+Assert.Equals("[apple, banana, orange, watermelon, peach, strawberry, pineapple]", tostring(list))
+
+Assert.Equals("banana", list:Get(2))
+
 list:RemoveAt(1)
-print(list:Count()) -- 输出：2
-print(list:Get(1))  -- 输出：banana
-print(list:Get(2))  -- 输出：orange
 
-print(DeepToString.of(list.items))
+Assert.Equals(6, list:Count())
+
+Assert.Equals("banana", list:Get(1))
+Assert.Equals("orange", list:Get(2))
+Assert.Equals("pineapple", list:Get(6))
+
 list:Reverse()
-print(DeepToString.of(list.items))
 
-print(DeepToString.of(MetadataTable))
-
-local parentClass = MetadataTable.GetParent(List)
-print("print(DeepToString.of(parentClass))")
-print(DeepToString.of(parentClass))
-print(DeepToString.of(MetadataTable.GetParent(parentClass)))
+Assert.Equals("[pineapple, strawberry, peach, watermelon, orange, banana]", tostring(list))

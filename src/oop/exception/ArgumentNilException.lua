@@ -1,16 +1,15 @@
 ﻿local keyword = require "oop.constant.keyword"
-local MetadataTable = require "oop.lang.runtime.MetadataTable"
+local ClassMetadataTable = require "oop.lang.runtime.ClassMetadataTable"
 local ArgumentException = require "oop.exception.ArgumentException"
-  
----@class  :Exception
----@field message string
+
+---@class ArgumentNilException:Exception
 local ArgumentNilException = setmetatable({}, ArgumentException)
 ArgumentNilException.__index = ArgumentNilException
 ArgumentNilException._name = "ArgumentNilException"
 ArgumentNilException._type = keyword.class
 ArgumentNilException._interfaces = {}
 
-MetadataTable.AddType(ArgumentNilException, ArgumentNilException._name)
-MetadataTable.AddParent(ArgumentNilException, ArgumentException)
+ClassMetadataTable.AddClass(ArgumentNilException, ArgumentNilException._name)
+ClassMetadataTable.AddBaseClass(ArgumentNilException, ArgumentException)
 
 return ArgumentNilException

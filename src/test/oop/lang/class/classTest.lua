@@ -12,11 +12,11 @@ function Test:new()
     return instance
 end
 
-function Test.__tostring(this)
+function Test.__tostring()
     return "Test(" ..
-            "foo=" .. this.foo ..
-            ", bar=" .. this.bar ..
-            ")"
+        "foo=" .. self.foo ..
+        ", bar=" .. self.bar ..
+        ")"
 end
 
 print(DeepToString.of(Test:new()))

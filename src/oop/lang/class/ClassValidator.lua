@@ -18,28 +18,4 @@ function ClassValidator.Is(class)
     return true
 end
 
-function ClassValidator.CanExtend(name, baseClass)
-    if not ClassValidator.Is(baseClass) then
-        return false, "Invalid base class, parameter must be Class"
-    end
-
-    if name == "Object" and baseClass ~= {} then
-        return false, "Invalid runtime inherit, Object parent must be DummyClass"
-    end
-
-    if name ~= "Object" and baseClass == {} then
-        return false, "Invalid runtime inherit, Class parent can't be DummyClass"
-    end
-
-    if type(name) ~= "string" then
-        return false, "Invalid class name:" .. tostring(name)
-    end
-
-    if MetadataTable.HasTypeForName(name) then
-        return false, "Class already exist, class name:" .. name
-    end
-
-    return true
-end
-
 return ClassValidator

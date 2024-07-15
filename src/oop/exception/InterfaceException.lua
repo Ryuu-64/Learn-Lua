@@ -1,16 +1,15 @@
 ﻿local keyword = require "oop.constant.keyword"
-local MetadataTable = require "oop.lang.runtime.MetadataTable"
+local ClassMetadataTable = require "oop.lang.runtime.ClassMetadataTable"
 local Exception = require "oop.exception.Exception"
 
 ---@class InterfaceException:Exception
----@field message string
 local InterfaceException = setmetatable({}, Exception)
 InterfaceException.__index = InterfaceException
 InterfaceException._name = "InterfaceException"
 InterfaceException._type = keyword.class
 InterfaceException._interfaces = {}
 
-MetadataTable.AddType(InterfaceException, InterfaceException._name)
-MetadataTable.AddParent(InterfaceException, Exception)
+ClassMetadataTable.AddClass(InterfaceException, InterfaceException._name)
+ClassMetadataTable.AddBaseClass(InterfaceException, Exception)
 
 return InterfaceException

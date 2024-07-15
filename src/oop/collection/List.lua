@@ -1,11 +1,26 @@
-﻿local Class = require "oop.Class"
+﻿local class = require "oop.lang.class.class"
+local Object = require "oop.Object"
 
 ---
 ---@class List:Object Represents a list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.
-local List = Class.class("List")
+---@field items table<Object>
+local List = class("List")
 
-function List._constructor(this)
+function List:__tostring()
+    local itemToStringList = {}
+    for i = 1, #self.items do
+        table.insert(itemToStringList, tostring(self.items[i]))
+    end
+
+    local itemsToString = table.concat(itemToStringList, ", ")
+    return "[" .. itemsToString .. "]"
+end
+
+function List:new()
+    ---@type List
+    local this = Object.new(self)
     this.items = {}
+    return this
 end
 
 ---

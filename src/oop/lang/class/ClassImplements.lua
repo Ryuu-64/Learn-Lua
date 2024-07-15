@@ -19,7 +19,7 @@ local function GetFunctionInfoTable(classOrInterface)
     return functionInfoTable
 end
 
-local function CanImplement(class, interface)
+local function ValidateInterface(class, interface)
     if not ClassValidator.Is(class) then
         return false
     end
@@ -45,7 +45,7 @@ local function CanImplement(class, interface)
     return true
 end
 
-local function CantImplementFunctionReason(functionName, infoInClass, infoInInterface)
+local function FunctionInvalidReason(functionName, infoInClass, infoInInterface)
     local reason = ""
     if infoInClass == nil then
         reason = string.rep(" ", 4) .. "No such function.\n"
@@ -71,7 +71,7 @@ local function CantImplementFunctionReason(functionName, infoInClass, infoInInte
         reason .. "\n"
 end
 
-local function CantImplementInterfaceReason(class, interface)
+local function InterfaceInvalidReason(class, interface)
     if not ClassValidator.Is(class) then
         return "not a class"
     end
@@ -86,7 +86,7 @@ local function CantImplementInterfaceReason(class, interface)
     local functionReason = ""
     for name, infoInInterface in pairs(infoListInInterface) do
         local infoInClass = infoListInClass[name]
-        local reason = CantImplementFunctionReason(name, infoInClass, infoInInterface)
+        local reason = FunctionInvalidReason(name, infoInClass, infoInInterface)
         if reason ~= "" then
             functionReason = functionReason .. reason
         end
@@ -101,29 +101,43 @@ end
 
 local function GetAllInterfaces(interfaces)
     local all = {}
-    local currentAll = {}
+    local cur = {}
     for i = 1, #interfaces do
-        table.insert(currentAll, interfaces[i])
+        table.insert(cur, interfaces[i])
     end
 
     repeat
-        local interface = currentAll[1]
+        local interface = cur[1]
         for i = 1, #interface._interfaces do
-            table.insert(currentAll, interface._interfaces[i])
+            table.insert(cur, interface._interfaces[i])
         end
         table.insert(all, interface)
-        table.remove(currentAll, 1)
-    until #currentAll == 0
+        table.remove(cur, 1)
+    until #cur == 0
 
     return all
 end
 
-local function CantImplementInterfaceReasons(class, interfaces)
+-- TODO exception
+local function Validate(class, interfaces)
+    local allInterfaces = GetAllInterfaces(interfaces)
+    for i = 1, #allInterfaces do
+        local interface = allInterfaces[i]
+        if not ValidateInterface(class, interface) then
+            return false
+        end
+    end
+
+    return true
+end
+
+-- TODO exception
+local function InvalidReason(class, interfaces)
     local allInterfaces = GetAllInterfaces(interfaces)
     local reasons = ""
     for i = 1, #allInterfaces do
         local interface = allInterfaces[i]
-        reasons = reasons .. CantImplementInterfaceReason(class, interface)
+        reasons = reasons .. InterfaceInvalidReason(class, interface)
     end
 
     local interfaceNames = {}
@@ -135,22 +149,10 @@ local function CantImplementInterfaceReasons(class, interfaces)
         reasons
 end
 
-local function CanImplements(class, interfaces)
-    local allInterfaces = GetAllInterfaces(interfaces)
-    for i = 1, #allInterfaces do
-        local interface = allInterfaces[i]
-        if not CanImplement(class, interface) then
-            return false
-        end
-    end
-
-    return true
-end
-
+-- TODO exception see InterfaceImplements.implements(interface, interfaces)
 function ClassImplements.implements(class, interfaces)
-    if not CanImplements(class, interfaces) then
-        error(CantImplementInterfaceReasons(class, interfaces))
-        return
+    if not Validate(class, interfaces) then
+        error(tostring(InvalidReason(class, interfaces)))
     end
 
     class._interfaces = interfaces
