@@ -1,12 +1,11 @@
-﻿local instantiate = require "oop.lang.class.instantiate"
-local class       = require "oop.lang.class.class"
-local Object      = require "oop.Object"
-local Assert      = require "test.Assert"
+﻿local class  = require "oop.lang.class.class"
+local Object = require "oop.Object"
+local Assert = require "test.Assert"
 
 local function equals()
     local a = Object:new()
     local b = Object:new()
-    Assert.Equals(a, b)
+    Assert.Equal(a, b)
 end
 
 local function overrideNew()
@@ -18,15 +17,15 @@ local function overrideNew()
 
     function ObjectOverrideNewTest:new()
         ---@type ObjectOverrideNewTest
-        local this = instantiate(self)
+        local this = Object:new()
         this.foo = 37
         this.bar = 42
         return this
     end
 
     local objectOverrideNewTest = ObjectOverrideNewTest:new()
-    Assert.Equals(37, objectOverrideNewTest.foo)
-    Assert.Equals(42, objectOverrideNewTest.bar)
+    Assert.Equal(37, objectOverrideNewTest.foo)
+    Assert.Equal(42, objectOverrideNewTest.bar)
 end
 
 equals()

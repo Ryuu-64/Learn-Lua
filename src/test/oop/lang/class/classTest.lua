@@ -1,18 +1,18 @@
 ﻿local DeepToString = require "util.DeepToString"
-local base = require "oop.class.base"
 local class = require "oop.lang.class.class"
+local Object = require "oop.Object"
 
 ---@class Test: Object
-local Test = class "Test"
+local Test = class("Test")
 
 function Test:new()
-    local instance = base(Test)
+    local instance = Object.new(self)
     instance.foo = 37
     instance.bar = 42
     return instance
 end
 
-function Test.__tostring()
+function Test:__tostring()
     return "Test(" ..
         "foo=" .. self.foo ..
         ", bar=" .. self.bar ..

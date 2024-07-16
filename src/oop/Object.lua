@@ -1,4 +1,5 @@
 ﻿local keyword = require "oop.constant.keyword"
+local is = require "oop.lang.is"
 local ClassMetadataTable = require "oop.lang.runtime.ClassMetadataTable"
 
 ---
@@ -17,6 +18,22 @@ end
 ---@param a Object
 ---@param b Object
 function Object.__eq(a, b)
+    if not is(a, Object) then
+        return false
+    end
+
+    if not is(b, Object) then
+        return false
+    end
+
+    if rawequal(a, getmetatable(b)) then
+        return false
+    end
+
+    if rawequal(b, getmetatable(a)) then
+        return false
+    end
+
     if #a._name ~= #b._name then
         return false
     end
@@ -38,9 +55,6 @@ function Object.__eq(a, b)
     return true
 end
 
-ClassMetadataTable.Add(Object, Object._name)
-ClassMetadataTable.AddBase(Object, getmetatable(Object))
-
 ---
 ---@return Object
 function Object:new()
@@ -48,5 +62,8 @@ function Object:new()
     local this = setmetatable({}, self)
     return this
 end
+
+ClassMetadataTable.Add(Object, Object._name)
+ClassMetadataTable.AddBase(Object, getmetatable(Object))
 
 return Object

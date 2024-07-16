@@ -12,7 +12,8 @@ Exception._type = keyword.class
 Exception._interfaces = {}
 
 function Exception:__tostring()
-    return self._name .. "(message=" .. self.message .. ", innerException=" .. tostring(self.innerException) .. ")"
+    return self._name ..
+        "(message=" .. tostring(self.message) .. ", innerException=" .. tostring(self.innerException) .. ")"
 end
 
 function Exception:new(message, innerException)

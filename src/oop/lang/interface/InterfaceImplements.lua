@@ -5,16 +5,12 @@ local ArgumentNilException = require "oop.exception.ArgumentNilException"
 ---@class InterfaceImplements
 local InterfaceImplements = {}
 
-local function Validate(interfaces)
+local function IsValid(interfaces)
     if interfaces == nil then
         return false
     end
 
     if type(interfaces) ~= "table" then
-        return false
-    end
-
-    if #interfaces == 0 then
         return false
     end
 
@@ -27,7 +23,7 @@ local function Validate(interfaces)
     return true
 end
 
-local function InvalidReason(interfaces)
+local function GetException(interfaces)
     if interfaces == nil then
         return ArgumentNilException:new("interfaces is nil")
     end
@@ -36,22 +32,18 @@ local function InvalidReason(interfaces)
         return ArgumentException:new("interfaces is not table")
     end
 
-    if #interfaces == 0 then
-        return ArgumentException:new("interfaces is empty")
-    end
-
     local reason = ""
     for i = 1, #interfaces do
         if not InterfaceValidator.is(interfaces[i]) then
-            reason = reason .. InterfaceValidator.reason(interfaces[i]).message
+            reason = reason .. InterfaceValidator.GetException(interfaces[i]).message
         end
     end
-    return ArgumentException:new(reason)
+    return ArgumentException:new("invalid implements parameters, reason: " .. reason)
 end
 
 function InterfaceImplements.implements(interface, interfaces)
-    if not Validate(interfaces) then
-        error(tostring(ArgumentException:new("implements failed", InvalidReason(interfaces))))
+    if not IsValid(interfaces) then
+        error(tostring(GetException(interfaces)))
     end
 
     interface._interfaces = interfaces

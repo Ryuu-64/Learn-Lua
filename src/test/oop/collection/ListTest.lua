@@ -13,22 +13,22 @@ list:Add("peach")
 list:Add("strawberry")
 list:Add("pineapple")
 
-Assert.Equals("[apple, banana, orange, watermelon, peach, strawberry, pineapple]", tostring(list))
+Assert.Equal("[apple, banana, orange, watermelon, peach, strawberry, pineapple]", tostring(list))
 
-Assert.Equals("banana", list:Get(2))
+Assert.Equal("banana", list:Get(2))
 
 list:RemoveAt(1)
 
-Assert.Equals(6, list:Count())
+Assert.Equal(6, list:Count())
 
-Assert.Equals("banana", list:Get(1))
-Assert.Equals("orange", list:Get(2))
-Assert.Equals("pineapple", list:Get(6))
+Assert.Equal("ba1nana", list:Get(1))
+Assert.Equal("orange", list:Get(2))
+Assert.Equal("pineapple", list:Get(6))
 
 list:Reverse()
 
-Assert.Equals("[pineapple, strawberry, peach, watermelon, orange, banana]", tostring(list))
+Assert.Equal("[pineapple, strawberry, peach, watermelon, orange, banana]", tostring(list))
 
 local expected = List:new({ "pineapple", "strawberry", "peach", "watermelon", "orange", "banana" })
 
-Assert.Equals(expected, list)
+Assert.Equal(expected, list)

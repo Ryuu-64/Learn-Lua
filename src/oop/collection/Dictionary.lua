@@ -1,13 +1,15 @@
-﻿local Class = require "oop.Class"
+﻿local class = require "oop.lang.class.class"
+local Object = require "oop.Object"
 
 ---
 ---@class Dictionary:Object
-local Dictionary = Class.class("Dictionary")
+local Dictionary = class("Dictionary")
 
-function Dictionary.new(class)
-    local instance = setmetatable({}, class)
-    instance.pairs = {}
-    return instance
+function Dictionary:new()
+    ---@type Dictionary
+    local this = Object.new(self)
+    this.pairs = {}
+    return this
 end
 
 function Dictionary:Add(key, value)

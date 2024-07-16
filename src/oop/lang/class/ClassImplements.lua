@@ -1,5 +1,6 @@
 ﻿local InterfaceValidator = require "oop.lang.interface.InterfaceValidator"
 local ClassValidator = require "oop.lang.class.ClassValidator"
+local ArgumentException = require "oop.exception.ArgumentException"
 
 ---@class ClassImplements
 local ClassImplements = {}
@@ -19,7 +20,7 @@ local function GetFunctionInfoTable(classOrInterface)
     return functionInfoTable
 end
 
-local function ValidateInterface(class, interface)
+local function ClassInterfaceValidator(class, interface)
     if not ClassValidator.Is(class) then
         return false
     end
@@ -71,7 +72,7 @@ local function FunctionInvalidReason(functionName, infoInClass, infoInInterface)
         reason .. "\n"
 end
 
-local function InterfaceInvalidReason(class, interface)
+local function InterfaceInvalidMessage(class, interface)
     if not ClassValidator.Is(class) then
         return "not a class"
     end
@@ -118,12 +119,11 @@ local function GetAllInterfaces(interfaces)
     return all
 end
 
--- TODO exception
-local function Validate(class, interfaces)
+local function IsValid(class, interfaces)
     local allInterfaces = GetAllInterfaces(interfaces)
     for i = 1, #allInterfaces do
         local interface = allInterfaces[i]
-        if not ValidateInterface(class, interface) then
+        if not ClassInterfaceValidator(class, interface) then
             return false
         end
     end
@@ -131,28 +131,32 @@ local function Validate(class, interfaces)
     return true
 end
 
--- TODO exception
-local function InvalidReason(class, interfaces)
+local function GetException(class, interfaces)
     local allInterfaces = GetAllInterfaces(interfaces)
-    local reasons = ""
+
+    --region interfaces name
+    local interfaceNameList = {}
+    for i = 1, #interfaces do
+        table.insert(interfaceNameList, "'" .. interfaces[i]._name .. "'")
+    end
+
+    local interfaceNameString = table.concat(interfaceNameList, ", ")
+    --endregion
+
+    local messages = ""
     for i = 1, #allInterfaces do
         local interface = allInterfaces[i]
-        reasons = reasons .. InterfaceInvalidReason(class, interface)
+        messages = messages .. InterfaceInvalidMessage(class, interface)
     end
 
-    local interfaceNames = {}
-    for i = 1, #interfaces do
-        table.insert(interfaceNames, "'" .. interfaces[i]._name .. "'")
-    end
-    return "Error implementing interfaces " ..
-        table.concat(interfaceNames, ", ") .. " for '" .. class._name .. "':\n" ..
-        reasons
+    return ArgumentException:new(
+        "Error implementing interfaces " .. interfaceNameString .. " for '" .. class._name .. "': " .. messages
+    )
 end
 
--- TODO exception see InterfaceImplements.implements(interface, interfaces)
 function ClassImplements.implements(class, interfaces)
-    if not Validate(class, interfaces) then
-        error(tostring(InvalidReason(class, interfaces)))
+    if not IsValid(class, interfaces) then
+        error(tostring(ArgumentException:new("invalid implements parameters", GetException(class, interfaces))))
     end
 
     class._interfaces = interfaces

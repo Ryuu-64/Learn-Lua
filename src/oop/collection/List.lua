@@ -1,4 +1,5 @@
 ﻿local class = require "oop.lang.class.class"
+local is = require "oop.lang.is"
 local Object = require "oop.Object"
 
 ---
@@ -21,6 +22,14 @@ end
 ---@param a List
 ---@param b List
 function List.__eq(a, b)
+    if not is(a, List) then
+        return false
+    end
+
+    if not is(b, List) then
+        return false
+    end
+    
     if #a.items ~= #b.items then
         return false
     end

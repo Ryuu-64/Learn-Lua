@@ -33,7 +33,7 @@ local function TypeKeywordInvalid()
         error()
     end
 
-    local exception = InterfaceValidator.reason(interface)
+    local exception = InterfaceValidator.GetException(interface)
     print(tostring(exception))
 end
 

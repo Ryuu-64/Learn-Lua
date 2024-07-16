@@ -3,10 +3,11 @@ local ClassImplements = require "oop.lang.class.ClassImplements"
 local InterfaceImplements = require "oop.lang.interface.InterfaceImplements"
 local ArgumentException = require "oop.exception.ArgumentException"
 
+---
 ---@param type Type
 ---@param interfaces table<Interface>
 ---@return void
-local function implements(type, interfaces)
+local implements = function(type, interfaces)
     if type._type == keyword.class then
         ClassImplements.implements(type, interfaces)
         return

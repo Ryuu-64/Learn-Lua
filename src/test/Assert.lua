@@ -1,15 +1,15 @@
 ﻿local Assert = {}
 
-function Assert.Equals(expected, actual)
-    if expected ~= actual then
-        error("equals assert failed")
-    end
+function Assert.Equal(expected, actual)
+    assert(expected == actual, "equal assert failed")
 end
 
-function Assert.NotEquals(expected, actual)
-    if expected == actual then
-        error("not equals assert failed")
-    end
+function Assert.NotEqual(expected, actual)
+    assert(expected ~= actual, "not equal assert failed")
+end
+
+function Assert.True(condition)
+    assert(condition, "true assert failed")
 end
 
 return Assert

@@ -34,7 +34,7 @@ function InterfaceValidator.is(interface)
     return true
 end
 
-function InterfaceValidator.reason(interface)
+function InterfaceValidator.GetException(interface)
     if interface == nil then
         return ArgumentException:new("interface is nil")
     end
@@ -44,7 +44,7 @@ function InterfaceValidator.reason(interface)
     end
 
     if interface._type ~= keyword.interface then
-        return ArgumentException:new("interface._type is not equal to keyword.interface")
+        return ArgumentException:new("interface._type is not 'interface'")
     end
 
     --region _interfaces
@@ -60,7 +60,7 @@ function InterfaceValidator.reason(interface)
     local reason = ""
     for i = 1, #interface._interfaces do
         local currInterface = interface._interfaces[i]
-        local exception = InterfaceValidator.reason(currInterface)
+        local exception = InterfaceValidator.GetException(currInterface)
         if exception ~= nil then
             reason = reason ..
                 "interface._interfaces[" ..

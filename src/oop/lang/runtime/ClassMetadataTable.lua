@@ -1,37 +1,40 @@
 ﻿---@class ClassMetadataTable
 local ClassMetadataTable = {}
 ClassMetadataTable.__index = ClassMetadataTable
+function ClassMetadataTable:__tostring()
+    return "ClassMetadataTable"
+end
 
-local classNameTable = {}
-local nameClassTable = {}
-local classBaseClassTable = {}
+ClassMetadataTable.classNameTable = {}
+ClassMetadataTable.nameClassTable = {}
+ClassMetadataTable.classBaseClassTable = {}
 
 ---
 ---@param class Type
 ---@param baseClass Type
 function ClassMetadataTable.AddBase(class, baseClass)
-    classBaseClassTable[class] = baseClass
+    ClassMetadataTable.classBaseClassTable[class] = baseClass
 end
 
 ---
 ---@param class Type
 ---@param name string
 function ClassMetadataTable.Add(class, name)
-    classNameTable[class] = name
-    nameClassTable[name] = class
+    ClassMetadataTable.classNameTable[class] = name
+    ClassMetadataTable.nameClassTable[name] = class
 end
 
 ---
 ---@param name string
 function ClassMetadataTable.Has(name)
-    return nameClassTable[name] ~= nil
+    return ClassMetadataTable.nameClassTable[name] ~= nil
 end
 
 ---
 ---@param name string
 ---@return Type
 function ClassMetadataTable.Get(name)
-    return nameClassTable[name]
+    return ClassMetadataTable.nameClassTable[name]
 end
 
 ---
@@ -39,7 +42,7 @@ end
 ---@return Type
 function ClassMetadataTable.GetBase(name)
     local class = ClassMetadataTable.Get(name)
-    return classBaseClassTable[class]
+    return ClassMetadataTable.classBaseClassTable[class]
 end
 
 return ClassMetadataTable
