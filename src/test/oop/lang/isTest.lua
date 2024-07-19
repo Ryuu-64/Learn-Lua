@@ -1,7 +1,7 @@
-﻿local is = require "oop.lang.is"
-local class = require "oop.lang.class.class"
-local interface = require "oop.lang.interface.interface"
-local implements = require "oop.lang.implements"
+﻿local is = require "oop.lang.keyword.is"
+local class = require "oop.lang.keyword.class"
+local interface = require "oop.lang.keyword.interface"
+local implements = require "oop.lang.keyword.implements"
 local Assert = require "test.Assert"
 
 local isSelfClassTest = function()

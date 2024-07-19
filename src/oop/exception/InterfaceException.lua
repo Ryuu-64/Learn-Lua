@@ -1,4 +1,4 @@
-﻿local keyword = require "oop.constant.keyword"
+﻿local keyword = require "oop.lang.keyword"
 local ClassMetadataTable = require "oop.lang.runtime.ClassMetadataTable"
 local Exception = require "oop.exception.Exception"
 

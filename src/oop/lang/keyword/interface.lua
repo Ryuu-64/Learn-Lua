@@ -1,4 +1,4 @@
-﻿local keyword = require "oop.constant.keyword"
+﻿local keyword = require "oop.lang.keyword"
 
 ---@param name string
 ---@return Type

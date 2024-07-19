@@ -1,4 +1,4 @@
-﻿local keyword = require "oop.constant.keyword"
+﻿local keyword = require "oop.lang.keyword"
 local InterfaceValidator = require "oop.lang.interface.InterfaceValidator"
 local Debugger = require "debug.emmy.Debugger"
 

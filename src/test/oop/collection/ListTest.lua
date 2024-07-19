@@ -21,7 +21,7 @@ list:RemoveAt(1)
 
 Assert.Equal(6, list:Count())
 
-Assert.Equal("ba1nana", list:Get(1))
+Assert.Equal("banana", list:Get(1))
 Assert.Equal("orange", list:Get(2))
 Assert.Equal("pineapple", list:Get(6))
 

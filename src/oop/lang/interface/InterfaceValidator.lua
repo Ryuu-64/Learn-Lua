@@ -1,4 +1,4 @@
-﻿local keyword = require "oop.constant.keyword"
+﻿local keyword = require "oop.lang.keyword"
 local ArgumentException = require "oop.exception.ArgumentException"
 
 ---@class InterfaceValidator

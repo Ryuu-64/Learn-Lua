@@ -1,5 +1,5 @@
-﻿local class = require "oop.lang.class.class"
-local is = require "oop.lang.is"
+﻿local class = require "oop.lang.keyword.class"
+local is = require "oop.lang.keyword.is"
 local Object = require "oop.Object"
 
 ---

@@ -1,4 +1,4 @@
-﻿local class  = require "oop.lang.class.class"
+﻿local class = require "oop.lang.keyword.class"
 local Object = require "oop.Object"
 local Assert = require "test.Assert"
 
@@ -13,7 +13,7 @@ local function overrideNew()
     ---@class ObjectOverrideNewTest: Object
     ---@field foo number
     ---@field bar number
-    local ObjectOverrideNewTest = class("ObjectTest")
+    local ObjectOverrideNewTest = class("ObjectOverrideNewTest")
 
     function ObjectOverrideNewTest:new()
         ---@type ObjectOverrideNewTest
@@ -30,10 +30,3 @@ end
 
 equals()
 overrideNew()
-
---function ObjectTest:__tostring()
---    return self._name .. "(" ..
---        "foo=" .. self.foo ..
---        ", bar=" .. self.bar ..
---        ")"
---end

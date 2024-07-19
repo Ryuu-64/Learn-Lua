@@ -1,5 +1,5 @@
-﻿local keyword = require "oop.constant.keyword"
-local is = require "oop.lang.is"
+﻿local keyword = require "oop.lang.keyword"
+local is = require "oop.lang.keyword.is"
 local ClassMetadataTable = require "oop.lang.runtime.ClassMetadataTable"
 
 ---
@@ -55,6 +55,8 @@ function Object.__eq(a, b)
     return true
 end
 
+---
+--- constructor
 ---
 ---@return Object
 function Object:new()

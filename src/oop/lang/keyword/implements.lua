@@ -1,4 +1,4 @@
-﻿local keyword = require "oop.constant.keyword"
+﻿local keyword = require "oop.lang.keyword"
 local ClassImplements = require "oop.lang.class.ClassImplements"
 local InterfaceImplements = require "oop.lang.interface.InterfaceImplements"
 local ArgumentException = require "oop.exception.ArgumentException"

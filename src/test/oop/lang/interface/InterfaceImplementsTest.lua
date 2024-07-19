@@ -1,7 +1,7 @@
 ﻿local keyword    = require "oop.constant.keyword"
 local class      = require "oop.lang.class.class"
 local interface  = require "oop.lang.interface.interface"
-local implements = require "oop.lang.implements"
+local implements = require "oop.lang.keyword.implements"
 local Assert     = require "test.Assert"
 local Debugger   = require "debug.emmy.Debugger"
 

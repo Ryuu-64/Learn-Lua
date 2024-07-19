@@ -1,5 +1,5 @@
 ﻿local DeepToString = require "util.DeepToString"
-local class = require "oop.lang.class.class"
+local class = require "oop.lang.keyword.class"
 local Object = require "oop.Object"
 
 ---@class Test: Object
